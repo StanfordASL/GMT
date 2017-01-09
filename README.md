@@ -1,2 +1,2 @@
 # GMT
-The Group Marching Tree Algorithm, submitted to ICRA 2017
+The Group Marching Tree Algorithm, submitted to IRC 2017
