@@ -110,10 +110,10 @@ int main(int argc, const char* argv[]) {
 
 	// TODO: should be read in from file
 	// initial and goal states (must then connect to the final tree)
-	std::vector<float> initial(DIM, 0.5);
-	std::vector<float> goal(DIM, 0.5);
-	goal[0] = 0.8; goal[1] = 0.8214;
-	initial[1] = 0.05; 
+	std::vector<float> initial(DIM, 0.1);
+	std::vector<float> goal(DIM, 0.9);
+	// goal[0] = 0.8; goal[1] = 0.8214;
+	// initial[1] = 0.05; 
 	for (int d = DIM/2; d < DIM; ++d) {
 	 	initial[d] = 0;
 	 	goal[d] = 0;
