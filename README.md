@@ -2,7 +2,7 @@
 This repository houses some example code from the paper "Group Marching Tree: Sampling-Based Approximately Optimal Motion Planning on GPUs" presented at IRC 2017 by Brian Ichter, Edward Schmerling, and Marco Pavone of Stanford's Autonomous Systems Lab. The paper can be found here <http://asl.stanford.edu/wp-content/papercite-data/pdf/Ichter.Schmerling.Pavone.ICRC17.pdf>.
 
 ## Disclaimers
-The code contained herein is all of "research grade", in that is messy, largely uncommented, and intended for reference more than anything else. It is unlikely to be useful out of the box, but may help elucidate descriptions in the paper or guide some coding strategies for users implementing GMT\*/similar algorithms. 
+The code contained herein is all of "research grade", in that is messy, largely uncommented, and intended for reference more than anything else. It is unlikely to be useful out of the box, but may help elucidate descriptions in the paper or guide some coding strategies for users implementing GMT\*/similar algorithms. For further disclaimers, please see the __Disclaimer__ section here, <https://github.com/schmrlng/MotionPlanning.jl>.
 
 ## Instructions
 ### What's included
