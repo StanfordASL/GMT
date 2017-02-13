@@ -2,9 +2,8 @@
 mainGround.cu
 Author: Brian Ichter
 
-This runs the GMT* and MCMP algorithms for a double integrator system (representing a quadrotor model). This main file 
-is used primarily for timing results and evaluations of solution quality, rather than to be run directly with the quad
-(we use mainQuad.cu for this).
+This runs the GMT* algorithm (and FMT, PRM) for a double integrator system (representing a quadrotor model). This main file 
+is used primarily for timing results and evaluations of solution quality.
 
 Run instructions:
 	TODO 
