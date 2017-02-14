@@ -29,4 +29,4 @@ Obstacles are currently hardcoded, but with nearly no speed penalty, these can b
 The collision checker is currently fairly basic, in that it only performs a broadphase AABB check for obstacles. It can however be replaced as needed.
 
 ## Contact
-If you're using the code, let me know! I'm happy to help explain any of it to bridge the gap between the research state it is in now and useful to you. You can contact me either through github or email me at <ichter@stanford.edu>.
+If you're using the code, let me know! I'm happy to discuss. You can contact me either through github or email me at <ichter@stanford.edu>.
