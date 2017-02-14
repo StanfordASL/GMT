@@ -88,6 +88,7 @@ void FMT(float *initial, float *goal, float *obstacles, int obstaclesCount,
 			// std::cout << "connecting (" << oneStepIdx << ", " << oneStepCost << ")" << std::endl;
 			if (oneStepIdx == -1) continue; // nothing to connect to
 
+			// creating the path online as the memory access was slower
 			std::vector<float> discMotion(DIM*(numDisc+1));
 			findDiscretizedPath(discMotion.data(), &(samplesAll[oneStepIdx*DIM]), &(samplesAll[nextIdx*DIM]), numDisc);
 
@@ -238,6 +239,7 @@ void FMTdub(float *initial, float *goal, float *obstacles, int obstaclesCount,
 			// discMotion.data(), numDisc);
 
  			// compute discretized motion with controls set
+ 			// computing online as the memory access was slower
  			dubinsAirplanePath(&(samplesAll[oneStepIdx*DIM]), &(samplesAll[nextIdx*DIM]), 
 				&(controlEdge[edgeIdx*numControls]), &(controlDEdge[edgeIdx*numControls]),
 				discMotion.data(), numDisc);

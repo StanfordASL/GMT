@@ -93,6 +93,8 @@ void FMTdub(float *initial, float *goal, float *obstacles, int obstaclesCount,
  			// findDiscretizedPath(discMotion.data(), &(samplesAll[oneStepIdx*DIM]), &(samplesAll[nextIdx*DIM]), numDisc);
  			std::vector<int> control(3);
  			std::vector<float> controlD(3);
+
+ 			// creating the path online as the memory access was slower
  			float cmin = dubinsAirplaneCost(&(samplesAll[oneStepIdx*DIM]), &(samplesAll[nextIdx*DIM]), control.data(), controlD.data());
 			dubinsAirplanePath(&(samplesAll[oneStepIdx*DIM]), &(samplesAll[nextIdx*DIM]), control.data(), controlD.data(), discMotion.data(), numDisc);
 
