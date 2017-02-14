@@ -1,3 +1,8 @@
+/*
+Author: brian ichter
+Where obstacles are stored.
+*/
+
 #include "obstacles.cuh"
 
 // if in use, remember to change the hi and lo for the sampler and the init and goal for the problem

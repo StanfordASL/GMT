@@ -1,3 +1,8 @@
+/*
+Author: brian ichter
+Solves two point boundary value problem for the dubins airplane. 
+*/
+
 #include "dubinsAirplane.cuh"
 
 // (control means -1 = right, 0 = straight, 1 = left) 

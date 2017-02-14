@@ -1,9 +1,15 @@
+/*
+Author: brian ichter
+Solves a two point boundary value problem for double integrator dynamics given a mixed time/control effort
+cost function.
+*/
 #include "2pBVP.cuh"
 
 const float g = -9.81;
 const float dtau = 0.000001;
 const float TOL = 0.0001;
 
+// fill splitPath with the optimal path along waypoints and return the time of the path
 float findOptimalPath(float dt, float *splitPath, float *xs, int numWaypoints, int *pathLength)
 {
     float tmax = 5;
@@ -37,6 +43,7 @@ float findOptimalPath(float dt, float *splitPath, float *xs, int numWaypoints, i
     return ttotal;
 }
 
+// given the optimal time, fill splitPath
 void discretizePath(float *splitPath, float *x0, float *x1, int numDisc, float topt)
 {
     float dt = topt/numDisc;
@@ -52,6 +59,7 @@ void discretizePath(float *splitPath, float *x0, float *x1, int numDisc, float t
     }
 }
 
+// find the optimal path between two points
 __device__ __host__
 float findDiscretizedPath(float *splitPath, float *x0, float *x1, int numDisc)
 {
@@ -71,6 +79,7 @@ float findDiscretizedPath(float *splitPath, float *x0, float *x1, int numDisc)
     return topt;
 }
 
+// bisection search to find the time for the optimal path
 __device__ __host__
 float toptBisection(float *x0, float *x1, float tmax)
 {
@@ -97,6 +106,7 @@ float toptBisection(float *x0, float *x1, float tmax)
 	return topt;
 }
 
+// compute the cost for the optimal path
 __device__ __host__
 float cost(float tau, float *x0, float *x1)
 {
@@ -109,6 +119,7 @@ float cost(float tau, float *x0, float *x1)
 	return cost;
 }
 
+// derivative of cost
 __device__ __host__
 float dcost(float tau, float *x0, float *x1)
 {
@@ -116,6 +127,7 @@ float dcost(float tau, float *x0, float *x1)
 	return dcost;
 }
 
+// fills out the state along a given path at time tau
 __device__ __host__
 void pathPoint(float t, float tau, float *x0, float *x1, float *x)
 {

@@ -1,3 +1,8 @@
+/*
+Author: brian ichter
+Helper functions like printing, averaging, multiplying, etc.
+*/
+
 #include "helper.cuh"
 
 void printArray(float* array, int dim1, int dim2, std::ostream& stream)

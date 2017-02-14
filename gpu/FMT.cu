@@ -1,3 +1,7 @@
+/*
+Author: brian ichter
+Runs the Fast marching tree algorithm.
+*/
 #include "FMT.cuh"
 
 

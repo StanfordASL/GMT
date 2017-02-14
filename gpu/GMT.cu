@@ -1,3 +1,7 @@
+/*
+Author: brian ichter
+Runs the group marching tree algorithm.
+*/
 #include "GMT.cuh"
 
 const int numDiscInit = 8;

@@ -1,3 +1,8 @@
+/*
+Author: brian ichter
+Solve the planning problem with probabilistic roadmaps.
+*/
+
 #include "PRM.cuh"
 
 

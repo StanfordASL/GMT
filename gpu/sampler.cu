@@ -1,3 +1,8 @@
+/*
+Author: brian ichter
+Generate state space samples
+*/
+
 #include "sampler.cuh"
 
 // TODO: add protection on initial and goal indexes

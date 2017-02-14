@@ -1,7 +1,9 @@
-#include "collisionCheck.cuh"
+/*
+Author: brian ichter
+Check collision between to states. Currently hardcoded for only 3 workspace dimensions.
+*/
 
-// TODO: fix to only check collision in the spatial dimensions
-// 3 has been fixed to be the workspace dimension
+#include "collisionCheck.cuh"
 
 __global__ 
 void freeEdges(float *obstacles, int obstaclesCount, float *samples, 
