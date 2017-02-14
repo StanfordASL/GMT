@@ -16,6 +16,9 @@ The code is run through the `mainGround.cu` (for the double integrator) and `mai
 ### Adding a new dynamical system
 To use some of the code framework to add a new system, one would primarily need to add a new CUDA file similar to `2pBVP.cu` and `dubinsAirplane.cu` which performs all local steering functionality. Depending on the geometry of the system, a new collision checker would also be required (if it can be checked with just straight line paths, perhaps discretized to model a larger curve, then the current collision checker should be useable).
 
+### Changing the problem state
+To change the problem state, i.e. Xfree (and Xobs), Xgoal, xinit, one needs to change the sampling bounds at the top of the respective main file (`hi` and `lo`), the obstacles and obstacle count in `obstacles.cu`, and finally `initial` and `goal` in the main file. It is also possible to determine these after compile time by adding some sort of interface, but this is not currently implemented (though I expect very little computation time penalties).
+
 ## Notes
 Much of the offline precomputation is in no way optimized. It is currently implemented on the CPU, but could see an additional ~100x speed up if implemented on the GPU. 
 
