@@ -75,7 +75,7 @@ void GMT(float *initial, float *goal, float *d_obstacles, int obstaclesCount,
 // }
 
 
-// // ***************** used in Simulation, doesn't take a fixed initial state
+// ***************** takes new initial state not currently in the tree
 void GMTinit(float *initial, float *goal, float *d_obstacles, int obstaclesCount,
 	float *d_distancesCome, int *d_nnGoEdges, int *d_nnComeEdges, int nnSize, float *d_discMotions, int *d_nnIdxs,
 	float *d_samples, int samplesCount, bool *d_isFreeSamples, float r, int numDisc,
@@ -233,7 +233,7 @@ void GMTinit(float *initial, float *goal, float *d_obstacles, int obstaclesCount
 	cudaFree(d_initial);
 }
 
-// ***************** used in Experiment, doesn't take a fixed initial state or goal
+// ***************** takes new initial and goal state not currently in the tree
 int GMTinitGoal(float *initial, float *goal, float *d_obstacles, int obstaclesCount,
 	float *d_distancesCome, int *d_nnGoEdges, int *d_nnComeEdges, int nnSize, float *d_discMotions, int *d_nnIdxs,
 	float *d_samples, int samplesCount, bool *d_isFreeSamples, float r, int numDisc,

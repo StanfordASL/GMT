@@ -2,8 +2,8 @@
 Author: brian ichter
 Runs the Fast marching tree algorithm.
 */
-#include "FMT.cuh"
 
+#include "FMT.cuh"
 
 void FMT(float *initial, float *goal, float *obstacles, int obstaclesCount,
 	std::vector<float> adjCosts, std::vector<int> nnGoEdges, std::vector<int> nnComeEdges, 

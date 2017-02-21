@@ -66,6 +66,7 @@ int main(int argc, const char* argv[]) {
 		return -1;
 	}
 
+	// set cuda device
 	int count = 0;
 	cudaGetDeviceCount(&count);
 	cudaError_t code;
@@ -75,7 +76,7 @@ int main(int argc, const char* argv[]) {
 	code = cudaPeekAtLastError();
 	if (cudaSuccess != code) { std::cout << "ERROR on selecting device: " << cudaGetErrorString(code) << std::endl; }
 	
-
+	// create MotionPlanningProblem, which is currently not used except for print statements
 	MotionPlanningProblem mpp;
 	mpp.filename = argv[1];
 	mpp.dimC = DIM;
@@ -101,10 +102,8 @@ int main(int argc, const char* argv[]) {
 	float *d_debugOutput;
 	cudaMalloc(&d_debugOutput, sizeof(float)*NUM);
 
-	// ***************** setup data structures and struct
-
-
 	// ***************** precomputation
+	// Note this could all be done on the GPU and is currently completely unoptimized
 	// (0.5, 0.05, 0.5) to (0.8, 0.8214, 0.5)
 
 	// TODO: should be read in from file
@@ -120,6 +119,8 @@ int main(int argc, const char* argv[]) {
 	int goalIdx = NUM-1;
 	int initIdx = 0;
 
+	// Sampling- to allow more parallelism we sample NUM points on X here (rather than Xfree)
+	// and perform sample free online once obstacles are known.
 	std::vector<float> samplesAll (DIM*NUM);
 	createSamplesHalton(0, samplesAll.data(), &(initial[0]), &(goal[0]), lo, hi);
 	thrust::device_vector<float> d_samples_thrust(DIM*NUM);
@@ -268,7 +269,7 @@ int main(int argc, const char* argv[]) {
 	int* d_edges_ptr = thrust::raw_pointer_cast(d_edges.data());
 
 
-	// ***************** read in online problem parameters from filename input
+	// ***************** read in online problem parameters from filename input (will eventually do)
 	
 	// obstacles
 	int obstaclesCount = getObstaclesCount();
@@ -326,7 +327,6 @@ int main(int argc, const char* argv[]) {
 	true && printSolution(NUM, d_samples, d_edges_ptr, d_costs);
 	matlabData.close();
 
-
 	// ***************** PRM
 	std::vector<float> costs(NUM,10000);
 	
@@ -340,7 +340,6 @@ int main(int argc, const char* argv[]) {
 	double t_PRM = (std::clock() - t_PRMStart) / (double) CLOCKS_PER_SEC;
 	std::cout << "******** PRM took: " << t_PRM << " s" << std::endl;
 	std::cout << "Solution cost: " << costs[goalIdx] << std::endl;
-	
 
 	// ***************** FMT
 	double t_FMTStart = std::clock();

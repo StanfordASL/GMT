@@ -18,7 +18,7 @@ Group Marching Tree algorithm
 /***********************
 CPU functions
 ***********************/
-// GMT if lambda < 1
+// GMT if lambda < 1 (not currently implemented, but a similar goemetric version is in geometricGMT.cu)
 void GMT(float *initial, float *goal, float *d_obstacles, int obstaclesCount,
 	float *d_distancesCome, int *d_nnGoEdges, int *d_nnComeEdges, int nnSize, float *d_samples, int samplesCount,
 	float lambda, float r, float *d_costs, int *d_edges, int initial_idx, int goal_idx);
