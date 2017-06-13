@@ -227,7 +227,6 @@ int main(int argc, const char* argv[]) {
 	int numEdges = rnIdx;
 	std::cout << "rnIdx is " << rnIdx << std::endl;
 	int idx = 0;
-	float tmax = 5;
 	std::vector<float> c2g (NUM);
 	for (int i = 0; i < NUM; ++i) {
 		for (int j = 0; j < NUM; ++j) {
