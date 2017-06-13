@@ -21,8 +21,6 @@ Much of the offline precomputation is in no way optimized (particularly for Dubi
 
 Only a group cost threshold factor (lambda) of 1 is implemented for the kinodynamic planning problem, but an example of arbitrary values is shown for the geometric planning problem in `geometricGMT.cu`. The extension should be relatively straight forward. If using a known value of lambda (i.e., once you decide on a value for your problem based on the desire for speed or low-cost), it is likely most performant to hardcode the data structures (as I have done for 1 here). 
 
-Obstacles are currently hardcoded, but with nearly no speed penalty, these can be added at runtime (as can initial and goal states). 
-
 The collision checker is currently fairly basic, in that it only performs a broadphase AABB check for obstacles. It can however be replaced as needed.
 
 ## Contact
