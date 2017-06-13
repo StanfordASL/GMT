@@ -56,6 +56,7 @@ float dt = 0.05; // time step for dynamic propagation
 int numDisc = 4; // number of discretizations of kinodynamic paths
 int numControls = 3; // number of total controls (i.e., Dubins word length)
 float ms = 1000;
+bool verbose = true;
 
 int main(int argc, const char* argv[]) {
 	float x0dub[4] = {0, 0, 0, M_PI/2};
@@ -83,10 +84,10 @@ int main(int argc, const char* argv[]) {
 	}
 
 	// check a file has been specific
-	// if (argc != 2) {
-	// 	std::cout << "Must specify an online setting filename, i.e. $ ./ground file.txt (current not implemented)" << std::endl;
-	// 	return -1;
-	// }
+	if (argc != 2) {
+		std::cout << "Must specify an problem setup filename, i.e. $ ./dubins file.txt" << std::endl;
+		return -1;
+	}
 
 	int count = 0;
 	cudaGetDeviceCount(&count);
@@ -113,6 +114,85 @@ int main(int argc, const char* argv[]) {
 		mpp.lo[i] = lo[i];
 	}
 
+	// init and goal states (must then connect to the final tree)
+	std::vector<float> init(DIM, 0.1);
+	std::vector<float> goal(DIM, 4.9);
+	init[3] = M_PI/2;
+	goal[3] = M_PI/2;
+
+	int goalIdx = NUM-1;
+	int initIdx = 0;
+
+	int numObstacles = getObstaclesCount();
+	std::vector<float> obstacles(numObstacles*2*DIM);
+	generateObstacles(obstacles.data(), numObstacles*2*DIM);
+
+	std::ifstream file (mpp.filename);
+	std::string readValue;
+	if (file.good()) {
+		// read in init
+		for (int d = 0; d < DIM; ++d) {
+			getline(file, readValue, ',');	
+	        std::stringstream convertorInit(readValue);
+	        convertorInit >> init[d];
+		}
+
+		for (int d = 0; d < DIM; ++d) {
+			getline(file, readValue, ',');	
+	        std::stringstream convertorGoal(readValue);
+	        convertorGoal >> goal[d];
+		}
+
+		for (int d = 0; d < DIM; ++d) {
+			getline(file, readValue, ',');	
+	        std::stringstream convertorLo(readValue);
+	        convertorLo >> lo[d];
+		}
+
+		for (int d = 0; d < DIM; ++d) {
+			getline(file, readValue, ',');	
+	        std::stringstream convertorHi(readValue);
+	        convertorHi >> hi[d];
+		}
+
+		getline(file, readValue, ',');
+		std::stringstream convertorNumObs(readValue);	
+		convertorNumObs >> numObstacles;
+
+		obstacles.resize(numObstacles*DIM*2);
+		for (int obs = 0; obs < numObstacles; ++obs) {
+			for (int d = 0; d < DIM*2; ++d) {
+				getline(file, readValue, ',');	
+				std::stringstream convertorObs(readValue);
+				convertorObs >> obstacles[obs*DIM*2 + d];
+			}
+		}
+
+		if (verbose) {
+			std::cout << "***** Inputs from " << mpp.filename << " are: *****" << std::endl;
+		}
+		if (verbose) {
+			std::cout << "init is: "; printArray(&init[0],1,DIM,std::cout);
+		}
+		if (verbose) {
+			std::cout << "goal is: "; printArray(&goal[0],1,DIM,std::cout);
+		}
+		if (verbose) {
+			std::cout << "lo is: "; printArray(&lo[0],1,DIM,std::cout);
+		}
+		if (verbose) {
+			std::cout << "hi is: "; printArray(&hi[0],1,DIM,std::cout);
+		}
+		if (verbose) {
+			std::cout << "obstacle count = " << numObstacles << std::endl;
+		}
+		if(verbose) {
+			printArray(&obstacles[0],numObstacles,2*DIM,std::cout);
+		}
+	} else {
+		std::cout << "didn't read in file, bad file!" << std::endl;
+	}
+
 	std::cout << "--- Motion planning problem, " << mpp.filename << " ---" << std::endl;
 	std::cout << "Sample count = " << mpp.numSamples << ", C-space dim = " << mpp.dimC << ", Workspace dim = " << mpp.dimW << std::endl;
 	std::cout << "hi = ["; for (int i = 0; i < mpp.dimC; ++i) { std::cout << hi[i] << " "; } std::cout << "], ";
@@ -127,20 +207,9 @@ int main(int argc, const char* argv[]) {
 
 
 	// ***************** precomputation
-	// (0.5, 0.05, 0.5) to (0.8, 0.8214, 0.5)
-
-	// TODO: should be read in from file
-	// initial and goal states (must then connect to the final tree)
-	std::vector<float> initial(DIM, 0.1);
-	std::vector<float> goal(DIM, 4.9);
-	initial[3] = M_PI/2;
-	goal[3] = M_PI/2;
-
-	int goalIdx = NUM-1;
-	int initIdx = 0;
 
 	std::vector<float> samplesAll (DIM*NUM);
-	createSamplesHalton(0, samplesAll.data(), &(initial[0]), &(goal[0]), lo, hi);
+	createSamplesHalton(0, samplesAll.data(), &(init[0]), &(goal[0]), lo, hi);
 	thrust::device_vector<float> d_samples_thrust(DIM*NUM);
 	float *d_samples = thrust::raw_pointer_cast(d_samples_thrust.data());
 	CUDA_ERROR_CHECK(cudaMemcpy(d_samples, samplesAll.data(), sizeof(float)*DIM*NUM, cudaMemcpyHostToDevice));
@@ -301,16 +370,13 @@ int main(int argc, const char* argv[]) {
 
 	// ***************** read in online problem parameters from filename input
 	// obstacles
-	int obstaclesCount = getObstaclesCount();
-	std::vector<float> obstacles(obstaclesCount*2*DIM);
-	generateObstacles(obstacles.data(), obstaclesCount*2*DIM);
-	std::cout << "Obstacle set, count = " << obstaclesCount << ":" << std::endl;
-	// printArray(obstacles.data(), obstaclesCount, 2*DIM, std::cout);
+	std::cout << "Obstacle set, count = " << numObstacles << ":" << std::endl;
+	// printArray(obstacles.data(), numObstacles, 2*DIM, std::cout);
 
 	// load obstacles on device
 	float *d_obstacles;
-	CUDA_ERROR_CHECK(cudaMalloc(&d_obstacles, sizeof(float)*2*obstaclesCount*DIM));
-	CUDA_ERROR_CHECK(cudaMemcpy(d_obstacles, obstacles.data(), sizeof(float)*2*obstaclesCount*DIM, cudaMemcpyHostToDevice));
+	CUDA_ERROR_CHECK(cudaMalloc(&d_obstacles, sizeof(float)*2*numObstacles*DIM));
+	CUDA_ERROR_CHECK(cudaMemcpy(d_obstacles, obstacles.data(), sizeof(float)*2*numObstacles*DIM, cudaMemcpyHostToDevice));
 
 	// sample free	
 	bool isFreeSamples[NUM];
@@ -323,7 +389,7 @@ int main(int argc, const char* argv[]) {
 	if (gridSizeSF == 2147483647)
 		std::cout << "...... ERROR: increase grid size for sampleFree" << std::endl;
 	sampleFree<<<gridSizeSF, blockSizeSF>>>(
-		d_obstacles, obstaclesCount, d_samples, d_isFreeSamples, d_debugOutput);
+		d_obstacles, numObstacles, d_samples, d_isFreeSamples, d_debugOutput);
 	cudaDeviceSynchronize();
 	code = cudaPeekAtLastError();
 	if (cudaSuccess != code) { std::cout << "ERROR on freeEdges: " << cudaGetErrorString(code) << std::endl; }
@@ -335,7 +401,7 @@ int main(int argc, const char* argv[]) {
 	// run GMT
 	double t_gmtStart = std::clock();
 	std::cout << "Running wavefront expansion GMT" << std::endl;
-	GMTwavefront(&(initial[0]), &(goal[0]), d_obstacles, obstaclesCount,
+	GMTwavefront(&(init[0]), &(goal[0]), d_obstacles, numObstacles,
 		d_distancesCome, d_nnGoEdges, d_nnComeEdges, maxNNSize, d_discMotions, d_nnIdxs,
 		d_samples, NUM, d_isFreeSamples, rn, numDisc*numControls-1,
 		d_costs, d_edges_ptr, initIdx, goalIdx) ;
@@ -350,7 +416,7 @@ int main(int argc, const char* argv[]) {
 	std::ofstream matlabData;
 	matlabData.open ("matlabInflationData.txt");
 	matlabData << "obstacles.data() = ["; 
-	printArray(obstacles.data(), 2*obstaclesCount, DIM, matlabData); 
+	printArray(obstacles.data(), 2*numObstacles, DIM, matlabData); 
 	matlabData << "];" << std::endl;
 
 	true && printSolution(NUM, d_samples, d_edges_ptr, d_costs);
@@ -361,21 +427,19 @@ int main(int argc, const char* argv[]) {
 	
 	double t_PRMStart = std::clock();
 	std::cout << "Running PRM" << std::endl;
-	PRM(&(initial[0]), &(goal[0]), d_obstacles, obstaclesCount,
+	PRM(&(init[0]), &(goal[0]), d_obstacles, numObstacles,
 		adjCosts, nnGoEdges, nnComeEdges, maxNNSize, d_discMotions, nnIdxs,
 		d_samples, NUM, d_isFreeSamples, rn, numDisc*numControls-1, numEdges,
 		costs, d_edges_ptr, initIdx, goalIdx,
 		c2g);
 	double t_PRM = (std::clock() - t_PRMStart) / (double) CLOCKS_PER_SEC;
-	std::cout << "******** PRM took: " << t_PRM << " s" << std::endl;
-	std::cout << "Solution cost: " << costs[goalIdx] << std::endl;
-	
+	std::cout << "******** PRM took: " << t_PRM << " s" << std::endl;	
 
 	// ***************** FMT
 	double t_FMTStart = std::clock();
 	std::cout << "Running FMT" << std::endl;
 	// call FMT
-	FMTdub(&(initial[0]), &(goal[0]), obstacles.data(), obstaclesCount,
+	FMTdub(&(init[0]), &(goal[0]), obstacles.data(), numObstacles,
 		adjCosts, nnGoEdges, nnComeEdges, maxNNSize, discMotions, nnIdxs,
 		NUM, d_isFreeSamples, rn, numDisc*numControls-1, numEdges,
 		costs, initIdx, goalIdx,
@@ -384,7 +448,6 @@ int main(int argc, const char* argv[]) {
 	
 	double t_FMT = (std::clock() - t_FMTStart) / (double) CLOCKS_PER_SEC;
 	std::cout << "******** FMT took: " << t_FMT << " s" << std::endl;
-	std::cout << "Solution cost: " << costs[goalIdx] << std::endl;
 
 	// ***************** free memory
 	cudaFree(d_obstacles);

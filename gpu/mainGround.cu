@@ -65,7 +65,7 @@ int main(int argc, const char* argv[]) {
 
 	// check a file has been specific
 	if (argc != 2) {
-		std::cout << "Must specify an online setting filename, i.e. $ ./ground file.txt" << std::endl;
+		std::cout << "Must specify an problem setup filename, i.e. $ ./ground file.txt" << std::endl;
 		return -1;
 	}
 
@@ -175,6 +175,8 @@ int main(int argc, const char* argv[]) {
 			printArray(&obstacles[0],numObstacles,2*DIM,std::cout);
 		}
 
+	}  else {
+		std::cout << "didn't read in file, bad file!" << std::endl;
 	}
 
 	std::cout << "--- Motion planning problem, " << mpp.filename << " ---" << std::endl;
