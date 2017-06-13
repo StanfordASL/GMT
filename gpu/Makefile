@@ -2,8 +2,8 @@ DIM ?= 6
 NUM ?= 1000
 
 CXX=nvcc
-CXXFLAGS=-O3 -arch=sm_30 -rdc=true -D DIM=$(DIM) -D NUM=$(NUM)
-# compute capability is sm_30 for macbook, sm_52 for phobos, sm_53 for tx1
+CXXFLAGS=-O3 -arch=sm_61 -rdc=true -D DIM=$(DIM) -D NUM=$(NUM)
+# compute capability is sm_30 for macbook, sm_52 for phobos, sm_53 for tx1, sm_61 for 1080
 
 SRC=*.cu
 

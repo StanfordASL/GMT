@@ -32,3 +32,5 @@ float dcost(float tau, float *x0, float *x1);
 // put a new point in the path at x
 __device__ __host__
 void pathPoint(float t, float tau, float *x0, float *x1, float *x);
+
+__global__ void fillCoptsTopts(float *samples, float *copts, float *topts, float tmax);
