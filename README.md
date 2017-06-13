@@ -11,16 +11,13 @@ CUDA C Code- this is the meat of the algorithm that runs on the GPU.
 MATLAB Code- this code visualizes solutions from the GPU code (output in `soln.txt`)
 
 ### Running the code
-The code is run through the `mainGround.cu` (for the double integrator) and `mainDubins.cu` (for the Dubins airplane). To compile, type `make <dubins,ground> NUM=<NUM> DIM=<DIM>`, where `<dubins,ground>` is `dubins` or `ground`, `<NUM>` is the number of state space samples, and `<DIM>` is the dimension of the state space (4 for dubins, 6 for double integrator). The code can then be run through `/.ground <file.txt>` where `<file.txt>` is the name of a file which contains the problem specification (currently only implemented for the double integrator; for Dubin's this file can be anything and will not be used). Two example problems are given in `input.txt` and `gates.txt`.
+The code is run through the `mainGround.cu` (for the double integrator) and `mainDubins.cu` (for the Dubins airplane). To compile, type `make <dubins,ground> NUM=<NUM> DIM=<DIM>`, where `<dubins,ground>` is a Dubins aircraft or a 6D double integrator, `<NUM>` is the number of state space samples, and `<DIM>` is the dimension of the state space (4 for dubins, 6 for double integrator). The code can then be run through `/.ground <file.txt>` where `<file.txt>` is the name of a file which contains the problem specification. Three example problems are given in `input.txt` and `gates.txt` for the double integrator and in `treesDub.txt` for the Dubins aircraft.
 
 ### Adding a new dynamical system
 To use some of the code framework to add a new system, one would primarily need to add a new CUDA file similar to `2pBVP.cu` and `dubinsAirplane.cu` which performs all local steering functionality. Depending on the geometry of the system, a new collision checker would also be required (if it can be checked with just straight line paths, perhaps discretized to model a larger curve, then the current collision checker should be useable).
 
-### Changing the problem state
-To change the problem state, i.e. Xfree (and Xobs), Xgoal, xinit, one needs to change the sampling bounds at the top of the respective main file (`hi` and `lo`), the obstacles and obstacle count in `obstacles.cu`, and finally `initial` and `goal` in the main file. It is also possible to determine these after compile time by adding some sort of interface, but this is not currently implemented (though I expect very little computation time penalties).
-
 ## Notes
-Much of the offline precomputation is in no way optimized (particularly for Dubin's). It is currently implemented on the CPU, but could see an additional ~100x speed up if implemented on the GPU. 
+Much of the offline precomputation is in no way optimized (particularly for Dubins). It is currently implemented on the CPU, but could see an additional ~100x speed up if implemented on the GPU. 
 
 Only a group cost threshold factor (lambda) of 1 is implemented for the kinodynamic planning problem, but an example of arbitrary values is shown for the geometric planning problem in `geometricGMT.cu`. The extension should be relatively straight forward. If using a known value of lambda (i.e., once you decide on a value for your problem based on the desire for speed or low-cost), it is likely most performant to hardcode the data structures (as I have done for 1 here). 
 
