@@ -25,6 +25,7 @@ Run instructions:
 #include <thrust/extrema.h>
 #include <thrust/reduce.h>
 #include <limits>
+#include <sstream>
 
 #include "motionPlanningProblem.cuh"
 #include "motionPlanningSolution.cuh"
