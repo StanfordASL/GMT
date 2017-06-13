@@ -18,5 +18,5 @@ dd = sum(sqrt(dd.*dd),2);
 dist = cumsum(dd);
 
 zpath = xinit(4) + dist/max(dist)*dz;
-path = [path [xinit(4); zpath]];
+path = [path [xinit(4); zpath]]
 end

@@ -226,6 +226,7 @@ int main(int argc, const char* argv[]) {
 	int rnIdx = (NUM-1)*(NUM)*percentile; // 10th quartile and number of NN
 	int numEdges = rnIdx;
 	std::cout << "rnIdx is " << rnIdx << std::endl;
+	std::cout << "This is a bit slow as it is currently implemented on CPU, can be sped up significantly with a simple GPU implementation" << std::endl;
 	int idx = 0;
 	std::vector<float> c2g (NUM);
 	for (int i = 0; i < NUM; ++i) {
